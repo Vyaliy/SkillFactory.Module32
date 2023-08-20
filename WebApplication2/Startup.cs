@@ -7,8 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication2.Middleware;
 
 namespace WebApplication2
 {
@@ -68,18 +70,13 @@ namespace WebApplication2
             }
 
             app.UseHttpsRedirection();
+            // Подключаем логирвоание с использованием ПО промежуточного слоя
+            app.UseMiddleware<LoggingMiddleware>();
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthorization();
-
-            app.Use(async (context, next) =>
-            {
-                // Для логирования данных о запросе используем свойства объекта HttpContext
-                Console.WriteLine($"[{DateTime.Now}]: New request to http://{context.Request.Host.Value + context.Request.Path}");
-                await next.Invoke();
-            });
 
             //Добавляем компонент с настройкой маршрутов для главной страницы
             app.UseEndpoints(endpoints =>
